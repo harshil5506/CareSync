@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Save, Moon, Sun, Bell, Lock, LogOut } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
+import api from "@/services/api";
+import { toast } from "sonner";
 
 export function SettingsPage() {
   const { user, logout } = useAuth();
@@ -10,7 +12,6 @@ export function SettingsPage() {
     fullName: user?.name || "",
     email: user?.email || "",
     phone: user?.phone || "",
-    specialization: user?.specialization || "",
   });
 
   const [passwords, setPasswords] = useState({
@@ -26,6 +27,8 @@ export function SettingsPage() {
     billingAlerts: true,
   });
 
+  const [saving, setSaving] = useState(false);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -40,19 +43,45 @@ export function SettingsPage() {
     setNotifications((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const handleSaveProfile = () => {
-    console.log("Saving profile:", formData);
-    alert("Profile updated successfully!");
+  const handleSaveProfile = async () => {
+    try {
+      setSaving(true);
+      await api.put("/auth/profile", {
+        name: formData.fullName,
+        phone: formData.phone,
+      });
+      toast.success("Profile updated successfully!");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to update profile");
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const handleChangePassword = () => {
+  const handleChangePassword = async () => {
     if (passwords.new !== passwords.confirm) {
-      alert("Passwords don't match!");
+      toast.error("Passwords don't match!");
       return;
     }
-    console.log("Changing password");
-    alert("Password changed successfully!");
-    setPasswords({ current: "", new: "", confirm: "" });
+
+    if (passwords.new.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+
+    try {
+      setSaving(true);
+      await api.post("/auth/change-password", {
+        currentPassword: passwords.current,
+        newPassword: passwords.new,
+      });
+      toast.success("Password changed successfully!");
+      setPasswords({ current: "", new: "", confirm: "" });
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to change password");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -62,7 +91,7 @@ export function SettingsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Sidebar */}
         <div className="lg:col-span-1">
-          <div className="bg-white dark:bg-card rounded-lg shadow-md p-4 space-y-2">
+          <div className="bg-white dark:bg-card rounded-lg shadow-md p-4 space-y-2 sticky top-20">
             <a
               href="#profile"
               className="block px-4 py-2 rounded hover:bg-muted text-foreground font-medium"
@@ -139,10 +168,11 @@ export function SettingsPage() {
               </div>
               <button
                 onClick={handleSaveProfile}
-                className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
+                disabled={saving}
+                className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50"
               >
                 <Save size={18} />
-                Save Changes
+                {saving ? "Saving..." : "Save Changes"}
               </button>
             </div>
           </div>
@@ -195,10 +225,11 @@ export function SettingsPage() {
               </div>
               <button
                 onClick={handleChangePassword}
-                className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
+                disabled={saving}
+                className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50"
               >
                 <Lock size={18} />
-                Update Password
+                {saving ? "Updating..." : "Update Password"}
               </button>
             </div>
           </div>
@@ -233,6 +264,9 @@ export function SettingsPage() {
                 </label>
               ))}
             </div>
+            <p className="text-sm text-muted-foreground mt-4">
+              Note: Notification preferences are stored locally for now. Full implementation coming in Phase 8.
+            </p>
           </div>
 
           {/* Appearance */}
