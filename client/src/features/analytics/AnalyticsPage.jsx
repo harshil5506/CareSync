@@ -1,17 +1,66 @@
+import { useState, useEffect } from "react";
 import { BarChart3, TrendingUp, Users, Calendar, PieChart } from "lucide-react";
+import api from "@/services/api";
+import LoadingSkeleton from "@/components/common/LoadingSkeleton";
+import { toast } from "sonner";
 
 export function AnalyticsPage() {
-  const stats = [
-    { icon: Users, label: "Total Patients", value: "1,250", trend: "+12%" },
-    { icon: Calendar, label: "Total Appointments", value: "856", trend: "+8%" },
+  const [stats, setStats] = useState(null);
+  const [recentAppointments, setRecentAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchAnalytics();
+  }, []);
+
+  const fetchAnalytics = async () => {
+    try {
+      setLoading(true);
+      const [statsRes, appointmentsRes] = await Promise.all([
+        api.get("/analytics/stats"),
+        api.get("/analytics/appointments/recent", { params: { limit: 5 } }),
+      ]);
+
+      setStats(statsRes.data);
+      setRecentAppointments(appointmentsRes.data);
+    } catch (error) {
+      toast.error("Failed to load analytics");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const statItems = [
+    {
+      icon: Users,
+      label: "Total Patients",
+      value: stats?.totalPatients || 0,
+      trend: "+12%",
+    },
+    {
+      icon: Calendar,
+      label: "Total Appointments",
+      value: stats?.totalAppointments || 0,
+      trend: "+8%",
+    },
     {
       icon: TrendingUp,
-      label: "Revenue This Month",
-      value: "₹2,45,000",
+      label: "Revenue",
+      value: `₹${(stats?.revenue || 0).toLocaleString("en-IN")}`,
       trend: "+15%",
     },
-    { icon: BarChart3, label: "Avg Rating", value: "4.8/5", trend: "+0.2" },
+    {
+      icon: BarChart3,
+      label: "Pending Bills",
+      value: stats?.pendingBills || 0,
+      trend: "Action needed",
+    },
   ];
+
+  if (loading) {
+    return <LoadingSkeleton count={8} />;
+  }
 
   return (
     <div className="p-6">
@@ -25,7 +74,7 @@ export function AnalyticsPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        {stats.map((stat, i) => {
+        {statItems.map((stat, i) => {
           const Icon = stat.icon;
           return (
             <div
@@ -48,34 +97,48 @@ export function AnalyticsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <div className="bg-white dark:bg-card rounded-lg shadow-md p-6">
           <h2 className="text-xl font-bold text-foreground mb-4">
-            Appointments Trend
+            Appointments Summary
           </h2>
-          <div className="h-40 flex items-center justify-center border border-dashed border-border rounded">
-            <div className="text-center">
-              <BarChart3
-                size={40}
-                className="mx-auto text-muted-foreground mb-2"
-              />
-              <p className="text-muted-foreground text-sm">
-                Chart rendering coming soon
-              </p>
+          <div className="space-y-3">
+            <div className="flex justify-between items-center p-2">
+              <span className="text-muted-foreground">Total Appointments</span>
+              <span className="font-bold">{stats?.totalAppointments || 0}</span>
+            </div>
+            <div className="flex justify-between items-center p-2">
+              <span className="text-muted-foreground">Completed</span>
+              <span className="font-bold">{stats?.completedAppointments || 0}</span>
+            </div>
+            <div className="flex justify-between items-center p-2">
+              <span className="text-muted-foreground">Departments</span>
+              <span className="font-bold">{stats?.totalDepartments || 0}</span>
+            </div>
+            <div className="flex justify-between items-center p-2">
+              <span className="text-muted-foreground">Doctors</span>
+              <span className="font-bold">{stats?.totalDoctors || 0}</span>
             </div>
           </div>
         </div>
 
         <div className="bg-white dark:bg-card rounded-lg shadow-md p-6">
           <h2 className="text-xl font-bold text-foreground mb-4">
-            Department Distribution
+            Billing Summary
           </h2>
-          <div className="h-40 flex items-center justify-center border border-dashed border-border rounded">
-            <div className="text-center">
-              <PieChart
-                size={40}
-                className="mx-auto text-muted-foreground mb-2"
-              />
-              <p className="text-muted-foreground text-sm">
-                Chart rendering coming soon
-              </p>
+          <div className="space-y-3">
+            <div className="flex justify-between items-center p-2">
+              <span className="text-muted-foreground">Total Revenue</span>
+              <span className="font-bold text-green-600">
+                ₹{(stats?.revenue || 0).toLocaleString("en-IN")}
+              </span>
+            </div>
+            <div className="flex justify-between items-center p-2">
+              <span className="text-muted-foreground">Pending Bills</span>
+              <span className="font-bold text-yellow-600">
+                {stats?.pendingBills || 0}
+              </span>
+            </div>
+            <div className="flex justify-between items-center p-2">
+              <span className="text-muted-foreground">Total Patients</span>
+              <span className="font-bold">{stats?.totalPatients || 0}</span>
             </div>
           </div>
         </div>
@@ -86,31 +149,39 @@ export function AnalyticsPage() {
           Recent Appointments
         </h2>
         <div className="space-y-3">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <div
-              key={i}
-              className="flex justify-between items-center p-3 border border-border rounded hover:bg-muted transition"
-            >
-              <div>
-                <p className="font-medium text-foreground">Patient {i}</p>
-                <p className="text-sm text-muted-foreground">
-                  Dr. Name • 2 days ago
-                </p>
+          {recentAppointments.length === 0 ? (
+            <p className="text-muted-foreground text-center py-8">
+              No appointments found
+            </p>
+          ) : (
+            recentAppointments.map((apt, i) => (
+              <div
+                key={i}
+                className="flex justify-between items-center p-3 border border-border rounded hover:bg-muted transition"
+              >
+                <div>
+                  <p className="font-medium text-foreground">
+                    {apt.patient?.user?.name || "Patient"}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {apt.doctor?.user?.name} • {apt.doctor?.specialization}
+                  </p>
+                </div>
+                <span
+                  className={`px-2 py-1 rounded text-xs font-medium ${
+                    apt.status === "completed"
+                      ? "bg-green-100 text-green-800"
+                      : apt.status === "confirmed"
+                        ? "bg-blue-100 text-blue-800"
+                        : "bg-yellow-100 text-yellow-800"
+                  }`}
+                >
+                  {apt.status}
+                </span>
               </div>
-              <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-medium">
-                Completed
-              </span>
-            </div>
-          ))}
+            ))
+          )}
         </div>
-      </div>
-
-      <div className="mt-6 p-4 bg-orange-50 dark:bg-orange-950 border border-orange-200 dark:border-orange-800 rounded-lg">
-        <p className="text-sm text-orange-800 dark:text-orange-200">
-          📊 <strong>Analytics Module:</strong> Advanced analytics with Recharts
-          integration, real-time metrics, and department-wise analytics coming
-          in Phase 7.
-        </p>
       </div>
     </div>
   );
