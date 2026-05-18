@@ -18,6 +18,7 @@ import hospitalRoutes from './routes/hospitalRoutes.js';
 import prescriptionRoutes from './routes/prescriptionRoutes.js';
 import billRoutes from './routes/billRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
+import notificationRoutes from './routes/notificationRoutes.js';
 
 dotenv.config();
 
@@ -62,6 +63,7 @@ app.use('/api/hospitals', hospitalRoutes);
 app.use('/api/prescriptions', prescriptionRoutes);
 app.use('/api/billing', billRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // 404 Handler
 app.use((req, res) => {

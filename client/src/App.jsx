@@ -23,6 +23,7 @@ import OrganizationHierarchyPage from '@/features/admin/OrganizationHierarchyPag
 import HospitalDashboardPage from '@/features/admin/HospitalDashboardPage';
 import DepartmentsListPage from '@/features/departments/DepartmentsListPage';
 import AddDepartmentForm from '@/features/departments/AddDepartmentForm';
+import LandingPage from '@/pages/LandingPage';
 import { BarChart3, Calendar, Users } from 'lucide-react';
 import StatsCard from '@/components/common/StatsCard';
 
@@ -130,6 +131,7 @@ function AppRoutes() {
   return (
     <Routes>
       {/* Public Routes */}
+      <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
 
@@ -322,8 +324,7 @@ function AppRoutes() {
         }
       />
 
-      {/* Redirect */}
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      {/* 404 - Not Found */}
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
