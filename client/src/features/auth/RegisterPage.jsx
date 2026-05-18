@@ -74,7 +74,6 @@ export function RegisterPage() {
       setTimeout(() => navigate("/login"), 1000);
     } catch (err) {
       const errorMsg = err?.message || "Registration failed";
-      console.error("Register error:", err);
       setError(errorMsg);
       toast.error(errorMsg);
     } finally {

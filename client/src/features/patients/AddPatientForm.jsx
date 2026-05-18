@@ -33,7 +33,6 @@ export function AddPatientForm() {
       await api.post("/patients", formData);
       navigate("/patients");
     } catch (error) {
-      console.error("Error creating patient:", error);
       alert(error.response?.data?.message || "Error creating patient");
     } finally {
       setLoading(false);

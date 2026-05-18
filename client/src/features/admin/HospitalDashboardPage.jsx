@@ -33,7 +33,6 @@ export function HospitalDashboardPage() {
         setSelectedHospital(response.data.data[0]);
       }
     } catch (error) {
-      console.error("Error fetching hospitals:", error);
     }
   };
 
@@ -43,7 +42,6 @@ export function HospitalDashboardPage() {
       const response = await api.get(`/hospitals/${hospitalId}/stats`);
       setStats(response.data.data);
     } catch (error) {
-      console.error("Error fetching hospital stats:", error);
     } finally {
       setLoading(false);
     }

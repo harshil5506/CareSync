@@ -27,7 +27,6 @@ export function TopNavbar() {
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      console.log("Search:", searchQuery);
       setSearchQuery("");
     }
   };

@@ -34,7 +34,6 @@ export function AppointmentBookingForm() {
       const response = await api.get("/patients?limit=100");
       setPatients(response.data.data.patients);
     } catch (error) {
-      console.error("Error fetching patients:", error);
     }
   };
 
@@ -43,7 +42,6 @@ export function AppointmentBookingForm() {
       const response = await api.get("/doctors?limit=100");
       setDoctors(response.data.data.doctors);
     } catch (error) {
-      console.error("Error fetching doctors:", error);
     }
   };
 
@@ -54,7 +52,6 @@ export function AppointmentBookingForm() {
       );
       setAvailableSlots(response.data.data.slots || []);
     } catch (error) {
-      console.error("Error fetching slots:", error);
       setAvailableSlots([]);
     }
   };
@@ -76,7 +73,6 @@ export function AppointmentBookingForm() {
       await api.post("/appointments", formData);
       navigate("/appointments");
     } catch (error) {
-      console.error("Error creating appointment:", error);
       alert(error.response?.data?.message || "Error creating appointment");
     } finally {
       setLoading(false);

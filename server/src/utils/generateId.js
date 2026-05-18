@@ -35,6 +35,6 @@ export const initializeCounter = async (type, Model) => {
       counters[type] = lastNumber;
     }
   } catch (error) {
-    console.log(`Could not initialize counter for ${type}`);
+    // Silently fail if counter initialization fails
   }
 };

@@ -42,14 +42,12 @@ export function AppointmentsListPage() {
       };
 
       const response = await api.get("/appointments", { params });
-      console.log("API Response:", response.data);
 
       // Handle both response formats
       const data = response.data.data || response.data;
       setAppointments(data.appointments || []);
       setPagination(data.pagination || {});
     } catch (error) {
-      console.error("Error fetching appointments:", error);
       setAppointments([]);
     } finally {
       setLoading(false);
@@ -70,7 +68,6 @@ export function AppointmentsListPage() {
       });
       fetchAppointments(1);
     } catch (error) {
-      console.error("Error cancelling appointment:", error);
     }
   };
 

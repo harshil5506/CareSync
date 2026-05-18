@@ -38,7 +38,6 @@ export function DepartmentsListPage() {
       setDepartments(response.data.data.departments);
       setPagination(response.data.data.pagination);
     } catch (error) {
-      console.error("Error fetching departments:", error);
     } finally {
       setLoading(false);
     }
@@ -56,7 +55,6 @@ export function DepartmentsListPage() {
       await api.delete(`/departments/${id}`);
       fetchDepartments(1);
     } catch (error) {
-      console.error("Error deleting department:", error);
     }
   };
 

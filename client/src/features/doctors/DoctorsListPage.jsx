@@ -41,7 +41,6 @@ export function DoctorsListPage() {
       setDoctors(response.data.data.doctors);
       setPagination(response.data.data.pagination);
     } catch (error) {
-      console.error("Error fetching doctors:", error);
     } finally {
       setLoading(false);
     }
@@ -58,7 +57,6 @@ export function DoctorsListPage() {
       await api.delete(`/doctors/${id}`);
       fetchDoctors(1);
     } catch (error) {
-      console.error("Error deleting doctor:", error);
     }
   };
 

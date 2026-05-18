@@ -25,7 +25,6 @@ export function OrganizationHierarchyPage() {
       const response = await api.get("/hospitals/hierarchy/all");
       setHospitals(response.data.data.hierarchyData);
     } catch (error) {
-      console.error("Error fetching hierarchy:", error);
     } finally {
       setLoading(false);
     }

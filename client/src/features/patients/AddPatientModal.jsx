@@ -40,7 +40,6 @@ export function AddPatientModal({ isOpen, onClose, onSuccess }) {
       });
       onSuccess();
     } catch (error) {
-      console.error("Error creating patient:", error);
       alert(error.response?.data?.message || "Error creating patient");
     } finally {
       setLoading(false);

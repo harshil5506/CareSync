@@ -37,7 +37,6 @@ export function AddDoctorForm() {
       const response = await api.get("/departments?limit=100");
       setDepartments(response.data.data.departments);
     } catch (error) {
-      console.error("Error fetching departments:", error);
     }
   };
 
@@ -54,7 +53,6 @@ export function AddDoctorForm() {
       await api.post("/doctors", formData);
       navigate("/doctors");
     } catch (error) {
-      console.error("Error creating doctor:", error);
       alert(error.response?.data?.message || "Error creating doctor");
     } finally {
       setLoading(false);

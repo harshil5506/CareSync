@@ -25,12 +25,10 @@ export function LoginPage() {
 
     try {
       const response = await login(email, password);
-      console.log('Login response:', response);
       toast.success('Login successful!');
       setTimeout(() => navigate('/dashboard'), 500);
     } catch (err) {
       const errorMsg = err?.message || err?.data?.message || 'Login failed';
-      console.error('Login error:', err);
       setError(errorMsg);
       toast.error(errorMsg);
     } finally {

@@ -37,7 +37,6 @@ export function DoctorAppointmentsPage() {
         const response = await api.get("/doctors/user/profile");
         setDoctorId(response.data.data._id);
       } catch (error) {
-        console.error("Error fetching doctor profile:", error);
       }
     };
     fetchDoctorProfile();
@@ -61,7 +60,6 @@ export function DoctorAppointmentsPage() {
       setAppointments(response.data.data.appointments);
       setPagination(response.data.data.pagination);
     } catch (error) {
-      console.error("Error fetching appointments:", error);
     } finally {
       setLoading(false);
     }
@@ -80,7 +78,6 @@ export function DoctorAppointmentsPage() {
       });
       fetchAppointments(pagination.page || 1);
     } catch (error) {
-      console.error("Error updating appointment status:", error);
     }
   };
 

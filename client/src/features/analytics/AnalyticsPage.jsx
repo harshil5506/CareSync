@@ -24,8 +24,8 @@ export function AnalyticsPage() {
       setStats(statsRes.data);
       setRecentAppointments(appointmentsRes.data);
     } catch (error) {
-      toast.error("Failed to load analytics");
-      console.error(error);
+      console.error("Analytics load error:", error);
+      toast.error(error.response?.data?.message || "Failed to load analytics");
     } finally {
       setLoading(false);
     }

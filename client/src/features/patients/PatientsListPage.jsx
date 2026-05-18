@@ -53,7 +53,6 @@ export function PatientsListPage() {
       setPatients(response.data.data.patients);
       setPagination(response.data.data.pagination);
     } catch (error) {
-      console.error("Error fetching patients:", error);
     } finally {
       setLoading(false);
     }
@@ -71,7 +70,6 @@ export function PatientsListPage() {
       await api.delete(`/patients/${id}`);
       fetchPatients(1);
     } catch (error) {
-      console.error("Error deleting patient:", error);
     }
   };
 

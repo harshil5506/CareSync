@@ -24,7 +24,6 @@ export function AddDepartmentForm() {
       await api.post("/departments", formData);
       navigate("/departments");
     } catch (error) {
-      console.error("Error creating department:", error);
       alert(error.response?.data?.message || "Error creating department");
     } finally {
       setLoading(false);
