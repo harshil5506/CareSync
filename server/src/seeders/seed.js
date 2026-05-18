@@ -5,6 +5,7 @@ import User from "../models/User.js";
 import Patient from "../models/Patient.js";
 import Doctor from "../models/Doctor.js";
 import Department from "../models/Department.js";
+import Hospital from "../models/Hospital.js";
 import Appointment from "../models/Appointment.js";
 import { generateId } from "../utils/generateId.js";
 import connectDB from "../config/db.js";
@@ -20,31 +21,79 @@ const seedDatabase = async () => {
     await Patient.deleteMany({});
     await Doctor.deleteMany({});
     await Department.deleteMany({});
+    await Hospital.deleteMany({});
     await Appointment.deleteMany({});
+
+    console.log("🏥 Creating hospitals...");
+    const hospitals = await Hospital.create([
+      {
+        name: "City Medical Center",
+        email: "citymedical@hospital.com",
+        phone: "9876543200",
+        address: "123 Main Street, Downtown",
+        city: "Mumbai",
+        state: "Maharashtra",
+        zipCode: "400001",
+        country: "India",
+        description: "Leading multi-specialty hospital",
+      },
+      {
+        name: "Apollo Health Services",
+        email: "apollo@hospital.com",
+        phone: "9876543201",
+        address: "456 Hospital Road, Suburbs",
+        city: "Bangalore",
+        state: "Karnataka",
+        zipCode: "560001",
+        country: "India",
+        description: "Premier healthcare provider",
+      },
+    ]);
 
     console.log("📦 Creating departments...");
     const departments = await Department.create([
       {
         name: "General Medicine",
         description: "General medical services and consultations",
+        hospital: hospitals[0]._id,
       },
       {
         name: "Cardiology",
         description: "Heart and cardiovascular disease treatment",
+        hospital: hospitals[0]._id,
       },
       {
         name: "Pediatrics",
         description: "Child healthcare and pediatric services",
+        hospital: hospitals[0]._id,
       },
       {
         name: "Orthopedics",
         description: "Bone, joint and muscle treatment",
+        hospital: hospitals[1]._id,
       },
       {
         name: "Dentistry",
         description: "Dental care and treatment",
+        hospital: hospitals[1]._id,
       },
     ]);
+
+    // Update hospitals with departments
+    await Hospital.updateOne(
+      { _id: hospitals[0]._id },
+      {
+        departments: departments.slice(0, 3),
+        totalDepartments: 3,
+      },
+    );
+    await Hospital.updateOne(
+      { _id: hospitals[1]._id },
+      {
+        departments: departments.slice(3),
+        totalDepartments: 2,
+      },
+    );
 
     console.log("👨‍⚕️ Creating admin users...");
     const adminPassword = await bcrypt.hash("Admin@123", 10);
@@ -125,6 +174,16 @@ const seedDatabase = async () => {
       },
     ]);
 
+    // Update hospitals with total doctors
+    await Hospital.updateOne(
+      { _id: hospitals[0]._id },
+      { totalDoctors: 3 },
+    );
+    await Hospital.updateOne(
+      { _id: hospitals[1]._id },
+      { totalDoctors: 1 },
+    );
+
     console.log("👥 Creating patient users...");
     const patientPassword = await bcrypt.hash("Patient@123", 10);
     const patientUsers = await User.create(
@@ -179,6 +238,7 @@ const seedDatabase = async () => {
           type: ["consultation", "follow-up", "routine"][i % 3],
           status: ["pending", "confirmed", "completed"][i % 3],
           reason: "General checkup",
+          queueNumber: (i % 4) + 1,
         };
       }),
     );
@@ -187,16 +247,21 @@ const seedDatabase = async () => {
     console.log(`
 
 🎯 Created:
+- 2 Hospitals
+- 5 Departments (Hospital-wise)
 - 1 Admin
 - 4 Doctors
 - 20 Patients
-- 5 Departments
 - 15 Appointments
 
 📧 Test Credentials:
 - Admin: admin@caresync.com / Admin@123
 - Doctor: doctor1@caresync.com / Doctor@123
 - Patient: patient1@caresync.com / Patient@123
+
+🏥 Hospitals:
+- City Medical Center (Mumbai) - 3 Departments, 3 Doctors
+- Apollo Health Services (Bangalore) - 2 Departments, 1 Doctor
     `);
 
     process.exit(0);

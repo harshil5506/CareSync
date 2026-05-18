@@ -6,14 +6,30 @@ import ProtectedRoute from '@/components/common/ProtectedRoute';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import LoginPage from '@/features/auth/LoginPage';
 import RegisterPage from '@/features/auth/RegisterPage';
+import PatientsListPage from '@/features/patients/PatientsListPage';
+import AddPatientForm from '@/features/patients/AddPatientForm';
+import DoctorMyPatientsPage from '@/features/patients/DoctorMyPatientsPage';
+import DoctorsListPage from '@/features/doctors/DoctorsListPage';
+import AddDoctorForm from '@/features/doctors/AddDoctorForm';
+import AppointmentsListPage from '@/features/appointments/AppointmentsListPage';
+import DoctorAppointmentsPage from '@/features/appointments/DoctorAppointmentsPage';
+import AppointmentBookingForm from '@/features/appointments/AppointmentBookingForm';
+import PrescriptionsPage from '@/features/prescriptions/PrescriptionsPage';
+import BillingPage from '@/features/billing/BillingPage';
+import AnalyticsPage from '@/features/analytics/AnalyticsPage';
+import SettingsPage from '@/features/settings/SettingsPage';
+import OrganizationHierarchyPage from '@/features/admin/OrganizationHierarchyPage';
+import HospitalDashboardPage from '@/features/admin/HospitalDashboardPage';
+import DepartmentsListPage from '@/features/departments/DepartmentsListPage';
+import AddDepartmentForm from '@/features/departments/AddDepartmentForm';
 import { BarChart3, Calendar, Users } from 'lucide-react';
 import StatsCard from '@/components/common/StatsCard';
 
 function DashboardContent() {
   const { user } = useAuth();
 
-  // Sample dashboard content
-  const stats = [
+  // Admin stats
+  const adminStats = [
     {
       icon: Users,
       label: 'Total Patients',
@@ -37,11 +53,55 @@ function DashboardContent() {
     },
   ];
 
+  // Patient stats
+  const patientStats = [
+    {
+      icon: Calendar,
+      label: 'My Appointments',
+      value: '5',
+      trend: 'Upcoming',
+      trendPositive: true,
+    },
+  ];
+
+  // Doctor stats
+  const doctorStats = [
+    {
+      icon: Users,
+      label: 'My Patients',
+      value: '42',
+      trend: '8 new this week',
+      trendPositive: true,
+    },
+    {
+      icon: Calendar,
+      label: 'Today Appointments',
+      value: '7',
+      trend: 'Next 3 hours',
+      trendPositive: true,
+    },
+  ];
+
+  // Select stats based on role
+  let stats = [];
+  if (user?.role === 'admin') {
+    stats = adminStats;
+  } else if (user?.role === 'patient') {
+    stats = patientStats;
+  } else if (user?.role === 'doctor') {
+    stats = doctorStats;
+  }
+
   return (
     <div>
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-foreground">Welcome back, {user?.name}!</h1>
-        <p className="text-muted-foreground mt-2">Here's your dashboard overview</p>
+        <p className="text-muted-foreground mt-2">
+          {user?.role === 'admin' && "Here's your admin dashboard overview"}
+          {user?.role === 'patient' && "Here's your personal health dashboard"}
+          {user?.role === 'doctor' && "Here's your clinic dashboard"}
+          {user?.role === 'receptionist' && "Here's your reception dashboard"}
+        </p>
       </div>
 
       {/* Stats Grid */}
@@ -53,8 +113,13 @@ function DashboardContent() {
 
       {/* Placeholder Content */}
       <div className="bg-white dark:bg-card rounded-lg shadow-md p-6">
-        <h2 className="text-xl font-bold text-foreground mb-4">Recent Activity</h2>
-        <p className="text-muted-foreground">Coming in Phase 5: Core Features</p>
+        <h2 className="text-xl font-bold text-foreground mb-4">Welcome to CareSync</h2>
+        <p className="text-muted-foreground">
+          {user?.role === 'admin' && 'Manage your hospital, departments, doctors, and appointments from here.'}
+          {user?.role === 'patient' && 'Book appointments, view your medical records, and manage your health.'}
+          {user?.role === 'doctor' && 'Manage your appointments, prescriptions, and patient records.'}
+          {user?.role === 'receptionist' && 'Manage appointments and patient check-ins.'}
+        </p>
       </div>
     </div>
   );
@@ -85,10 +150,18 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <DashboardLayout>
-              <div className="text-center py-12">
-                <h2 className="text-2xl font-bold text-foreground">Patient Management</h2>
-                <p className="text-muted-foreground mt-2">Coming in Phase 5</p>
-              </div>
+              <PatientsListPage />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/patients/new"
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <DashboardLayout>
+              <AddPatientForm />
             </DashboardLayout>
           </ProtectedRoute>
         }
@@ -99,10 +172,29 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <DashboardLayout>
-              <div className="text-center py-12">
-                <h2 className="text-2xl font-bold text-foreground">Appointments</h2>
-                <p className="text-muted-foreground mt-2">Coming in Phase 5</p>
-              </div>
+              <AppointmentsListPage />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/doctor-appointments"
+        element={
+          <ProtectedRoute requiredRole="doctor">
+            <DashboardLayout>
+              <DoctorAppointmentsPage />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/appointments/new"
+        element={
+          <ProtectedRoute>
+            <DashboardLayout>
+              <AppointmentBookingForm />
             </DashboardLayout>
           </ProtectedRoute>
         }
@@ -113,10 +205,18 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <DashboardLayout>
-              <div className="text-center py-12">
-                <h2 className="text-2xl font-bold text-foreground">Prescriptions</h2>
-                <p className="text-muted-foreground mt-2">Coming in Phase 6</p>
-              </div>
+              <PrescriptionsPage />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/my-patients"
+        element={
+          <ProtectedRoute requiredRole="doctor">
+            <DashboardLayout>
+              <DoctorMyPatientsPage />
             </DashboardLayout>
           </ProtectedRoute>
         }
@@ -127,10 +227,7 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <DashboardLayout>
-              <div className="text-center py-12">
-                <h2 className="text-2xl font-bold text-foreground">Billing</h2>
-                <p className="text-muted-foreground mt-2">Coming in Phase 6</p>
-              </div>
+              <BillingPage />
             </DashboardLayout>
           </ProtectedRoute>
         }
@@ -141,10 +238,62 @@ function AppRoutes() {
         element={
           <ProtectedRoute requiredRole="admin">
             <DashboardLayout>
-              <div className="text-center py-12">
-                <h2 className="text-2xl font-bold text-foreground">Doctor Management</h2>
-                <p className="text-muted-foreground mt-2">Coming in Phase 5</p>
-              </div>
+              <DoctorsListPage />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/doctors/new"
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <DashboardLayout>
+              <AddDoctorForm />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/departments"
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <DashboardLayout>
+              <DepartmentsListPage />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/organization-hierarchy"
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <DashboardLayout>
+              <OrganizationHierarchyPage />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/hospital-dashboard"
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <DashboardLayout>
+              <HospitalDashboardPage />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/departments/new"
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <DashboardLayout>
+              <AddDepartmentForm />
             </DashboardLayout>
           </ProtectedRoute>
         }
@@ -155,10 +304,7 @@ function AppRoutes() {
         element={
           <ProtectedRoute requiredRole="admin">
             <DashboardLayout>
-              <div className="text-center py-12">
-                <h2 className="text-2xl font-bold text-foreground">Analytics</h2>
-                <p className="text-muted-foreground mt-2">Coming in Phase 7</p>
-              </div>
+              <AnalyticsPage />
             </DashboardLayout>
           </ProtectedRoute>
         }
@@ -169,10 +315,7 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <DashboardLayout>
-              <div className="text-center py-12">
-                <h2 className="text-2xl font-bold text-foreground">Settings</h2>
-                <p className="text-muted-foreground mt-2">Coming in Phase 8</p>
-              </div>
+              <SettingsPage />
             </DashboardLayout>
           </ProtectedRoute>
         }

@@ -10,6 +10,13 @@ import connectDB from './config/db.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { rateLimiter } from './middleware/rateLimiter.js';
 import authRoutes from './routes/authRoutes.js';
+import patientRoutes from './routes/patientRoutes.js';
+import doctorRoutes from './routes/doctorRoutes.js';
+import appointmentRoutes from './routes/appointmentRoutes.js';
+import departmentRoutes from './routes/departmentRoutes.js';
+import hospitalRoutes from './routes/hospitalRoutes.js';
+import prescriptionRoutes from './routes/prescriptionRoutes.js';
+import billRoutes from './routes/billRoutes.js';
 
 dotenv.config();
 
@@ -21,9 +28,6 @@ const io = new SocketIOServer(httpServer, {
     credentials: true,
   },
 });
-
-// Database Connection
-connectDB();
 
 // Middleware
 app.use(helmet());
@@ -49,14 +53,13 @@ app.get('/api/health', (req, res) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
-// app.use('/api/patients', patientRoutes);
-// app.use('/api/appointments', appointmentRoutes);
-// app.use('/api/prescriptions', prescriptionRoutes);
-// app.use('/api/billing', billingRoutes);
-// app.use('/api/doctors', doctorRoutes);
-// app.use('/api/departments', departmentRoutes);
-// app.use('/api/notifications', notificationRoutes);
-// app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/patients', patientRoutes);
+app.use('/api/doctors', doctorRoutes);
+app.use('/api/appointments', appointmentRoutes);
+app.use('/api/departments', departmentRoutes);
+app.use('/api/hospitals', hospitalRoutes);
+app.use('/api/prescriptions', prescriptionRoutes);
+app.use('/api/billing', billRoutes);
 
 // 404 Handler
 app.use((req, res) => {
@@ -81,9 +84,22 @@ io.on('connection', (socket) => {
 
 const PORT = process.env.PORT || 5000;
 
-httpServer.listen(PORT, () => {
-  console.log(`🚀 CareSync Server running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-});
+// Connect to database and start server
+const startServer = async () => {
+  try {
+    await connectDB();
+
+    httpServer.listen(PORT, () => {
+      console.log(`🚀 CareSync Server running on port ${PORT}`);
+      console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`Database: MongoDB Atlas Connected`);
+    });
+  } catch (error) {
+    console.error('❌ Failed to start server:', error.message);
+    process.exit(1);
+  }
+};
+
+startServer();
 
 export default app;

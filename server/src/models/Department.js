@@ -5,10 +5,14 @@ const departmentSchema = new mongoose.Schema(
     name: {
       type: String,
       required: [true, "Department name is required"],
-      unique: true,
       trim: true,
     },
     description: String,
+    hospital: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Hospital",
+      required: [true, "Hospital is required"],
+    },
     head: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -29,8 +33,9 @@ const departmentSchema = new mongoose.Schema(
 );
 
 // Indexes
-departmentSchema.index({ name: 1 });
+departmentSchema.index({ name: 1, hospital: 1 });
 departmentSchema.index({ status: 1 });
+departmentSchema.index({ hospital: 1 });
 
 const Department = mongoose.model("Department", departmentSchema);
 export default Department;

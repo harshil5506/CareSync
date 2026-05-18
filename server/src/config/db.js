@@ -8,15 +8,16 @@ const connectDB = async () => {
     await mongoose.connect(mongoUri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+      retryWrites: true,
+      w: "majority",
     });
 
     console.log("✅ MongoDB connected successfully");
+    console.log(`📍 Database: ${mongoose.connection.name}`);
+    return mongoose.connection;
   } catch (error) {
     console.error("❌ MongoDB connection error:", error.message);
-
-    // Retry connection after 5 seconds
-    console.log("Retrying connection in 5 seconds...");
-    setTimeout(connectDB, 5000);
+    throw error;
   }
 };
 
