@@ -1,43 +1,40 @@
-import { Link } from 'react-router-dom';
-import { Heart, Users, Calendar, BarChart3, Shield, Clock } from 'lucide-react';
+import { Link } from "react-router-dom";
+import { Heart, Users, Calendar, BarChart3, Shield, Clock } from "lucide-react";
 
 export function LandingPage() {
   const features = [
     {
       icon: Users,
-      title: 'Patient Management',
+      title: "Patient Management",
       description:
-        'Efficiently manage patient records, medical history, and personal information',
+        "Efficiently manage patient records, medical history, and personal information",
     },
     {
       icon: Calendar,
-      title: 'Appointment Booking',
+      title: "Appointment Booking",
       description:
-        'Easy scheduling system for appointments with real-time availability',
+        "Easy scheduling system for appointments with real-time availability",
     },
     {
       icon: Heart,
-      title: 'Prescription Management',
-      description:
-        'Digital prescriptions with PDF generation and easy sharing',
+      title: "Prescription Management",
+      description: "Digital prescriptions with PDF generation and easy sharing",
     },
     {
       icon: BarChart3,
-      title: 'Analytics Dashboard',
-      description:
-        'Comprehensive insights and metrics for hospital management',
+      title: "Analytics Dashboard",
+      description: "Comprehensive insights and metrics for hospital management",
     },
     {
       icon: Shield,
-      title: 'Secure & Compliant',
+      title: "Secure & Compliant",
       description:
-        'Enterprise-grade security with JWT authentication and encryption',
+        "Enterprise-grade security with JWT authentication and encryption",
     },
     {
       icon: Clock,
-      title: 'Real-time Updates',
-      description:
-        'Live notifications and instant updates across the platform',
+      title: "Real-time Updates",
+      description: "Live notifications and instant updates across the platform",
     },
   ];
 
@@ -73,8 +70,8 @@ export function LandingPage() {
         </h1>
         <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
           CareSync is a comprehensive patient management system that streamlines
-          hospital operations, improves patient care, and enhances doctor-patient
-          communication.
+          hospital operations, improves patient care, and enhances
+          doctor-patient communication.
         </p>
         <div className="flex gap-4 justify-center">
           <Link

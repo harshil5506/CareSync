@@ -13,12 +13,7 @@ export const createNotification = asyncHandler(async (req, res) => {
     data,
   });
 
-  sendResponse(
-    res,
-    201,
-    notification,
-    "Notification created successfully"
-  );
+  sendResponse(res, 201, notification, "Notification created successfully");
 });
 
 export const getNotifications = asyncHandler(async (req, res) => {
@@ -48,7 +43,7 @@ export const getNotifications = asyncHandler(async (req, res) => {
         pages: Math.ceil(total / limit),
       },
     },
-    "Notifications retrieved successfully"
+    "Notifications retrieved successfully",
   );
 });
 
@@ -73,7 +68,7 @@ export const markAsRead = asyncHandler(async (req, res) => {
   const notification = await Notification.findByIdAndUpdate(
     id,
     { read: true, readAt: new Date() },
-    { new: true }
+    { new: true },
   );
 
   if (!notification) {
@@ -91,7 +86,7 @@ export const markAllAsRead = asyncHandler(async (req, res) => {
 
   await Notification.updateMany(
     { userId, read: false },
-    { read: true, readAt: new Date() }
+    { read: true, readAt: new Date() },
   );
 
   sendResponse(res, 200, {}, "All notifications marked as read");
@@ -124,6 +119,6 @@ export const getUserUnreadCount = asyncHandler(async (req, res) => {
     res,
     200,
     { unreadCount },
-    "Unread count retrieved successfully"
+    "Unread count retrieved successfully",
   );
 });

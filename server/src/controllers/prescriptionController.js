@@ -98,14 +98,8 @@ export const getPrescriptionById = asyncHandler(async (req, res) => {
 
 export const updatePrescription = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const {
-    diagnosis,
-    medicines,
-    instructions,
-    followUpDate,
-    vitals,
-    status,
-  } = req.body;
+  const { diagnosis, medicines, instructions, followUpDate, vitals, status } =
+    req.body;
 
   const prescription = await Prescription.findByIdAndUpdate(
     id,

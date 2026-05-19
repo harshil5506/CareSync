@@ -43,9 +43,7 @@ export const getBills = asyncHandler(async (req, res) => {
 
   const query = {};
   if (search) {
-    query.$or = [
-      { billId: { $regex: search, $options: "i" } },
-    ];
+    query.$or = [{ billId: { $regex: search, $options: "i" } }];
   }
   if (patient) query.patient = patient;
   if (status) query.status = status;
@@ -221,18 +219,9 @@ export const getBillStats = asyncHandler(async (req, res) => {
           { $match: { status: "paid" } },
           { $group: { _id: null, total: { $sum: "$totalAmount" } } },
         ],
-        pendingBills: [
-          { $match: { status: "pending" } },
-          { $count: "count" },
-        ],
-        partialBills: [
-          { $match: { status: "partial" } },
-          { $count: "count" },
-        ],
-        overdueBills: [
-          { $match: { status: "overdue" } },
-          { $count: "count" },
-        ],
+        pendingBills: [{ $match: { status: "pending" } }, { $count: "count" }],
+        partialBills: [{ $match: { status: "partial" } }, { $count: "count" }],
+        overdueBills: [{ $match: { status: "overdue" } }, { $count: "count" }],
       },
     },
   ]);

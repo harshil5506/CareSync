@@ -127,7 +127,7 @@ pm2 startup
 server {
     listen 80;
     server_name your-domain.com;
-    
+
     # Redirect HTTP to HTTPS
     return 301 https://$server_name$request_uri;
 }
@@ -135,12 +135,12 @@ server {
 server {
     listen 443 ssl http2;
     server_name your-domain.com;
-    
+
     ssl_certificate /path/to/cert.pem;
     ssl_certificate_key /path/to/key.pem;
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers HIGH:!aNULL:!MD5;
-    
+
     # API proxy
     location /api {
         proxy_pass http://localhost:5000/api;
@@ -153,7 +153,7 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
     }
-    
+
     # Frontend
     location / {
         proxy_pass http://localhost:5173;
@@ -200,7 +200,7 @@ docker push your-registry/caresync:1.0
 #### Step 3: Deploy with Docker Compose
 
 ```yaml
-version: '3.8'
+version: "3.8"
 services:
   caresync:
     image: your-registry/caresync:1.0
@@ -212,7 +212,7 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       CLIENT_URL: ${CLIENT_URL}
     restart: unless-stopped
-    
+
   mongo:
     image: mongo:5.0
     volumes:
@@ -361,7 +361,9 @@ df -h
 ### Common Issues & Solutions
 
 #### Issue: "Cannot find module"
+
 **Solution**:
+
 ```bash
 npm install
 cd server && npm install && cd ..
@@ -369,26 +371,34 @@ cd client && npm install && cd ..
 ```
 
 #### Issue: MongoDB connection failed
+
 **Solution**:
+
 1. Check MONGODB_URI in .env
 2. Verify IP whitelist in MongoDB Atlas
 3. Check network connectivity
 4. Test connection: `mongosh "your-mongodb-uri"`
 
 #### Issue: JWT token invalid
+
 **Solution**:
+
 1. Verify JWT_SECRET is set correctly
 2. Restart application after changing JWT_SECRET
 3. Generate new token for testing
 
 #### Issue: CORS errors
+
 **Solution**:
+
 1. Check CLIENT_URL in environment
 2. Verify frontend URL matches CLIENT_URL
 3. Check browser console for actual URL
 
 #### Issue: High memory usage
+
 **Solution**:
+
 ```bash
 # Restart application
 pm2 restart caresync-api
@@ -484,7 +494,7 @@ pm2 start src/server.js -i max --name "caresync-api"
 ```javascript
 // Add to Express middleware
 app.use((req, res, next) => {
-  res.set('Cache-Control', 'public, max-age=3600');
+  res.set("Cache-Control", "public, max-age=3600");
   next();
 });
 ```
@@ -557,6 +567,7 @@ pm2 web
 ## SUPPORT & CONTACT
 
 For deployment support:
+
 - Documentation: https://github.com/caresync/docs
 - Issues: https://github.com/caresync/issues
 - Email: support@caresync.com

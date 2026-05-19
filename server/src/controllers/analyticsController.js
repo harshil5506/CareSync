@@ -66,12 +66,7 @@ export const getAppointmentTrend = asyncHandler(async (req, res) => {
     { $sort: { _id: 1 } },
   ]);
 
-  sendResponse(
-    res,
-    200,
-    trend,
-    "Appointment trend retrieved successfully",
-  );
+  sendResponse(res, 200, trend, "Appointment trend retrieved successfully");
 });
 
 export const getDepartmentDistribution = asyncHandler(async (req, res) => {
